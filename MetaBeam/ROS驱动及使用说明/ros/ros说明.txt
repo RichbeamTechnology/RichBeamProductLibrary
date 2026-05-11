@@ -1,0 +1,30 @@
+*/ 安装驱动，noetic换自己的版本 
+sudo apt-get install ros-noetic-velodyne  
+
+*/更改ip地址，enp2s0换成自己的网卡地址 
+sudo ifconfig enp2s0 192.168.198.1  
+
+*/ 创建工作空间 
+mkdir -p catkin_velodyne/src   
+cd catkin_velodyne/src    
+
+*/克隆驱动 
+git clone https://github.com/ros-drivers/velodyne.git   
+cd ..   
+rosdep install --from-paths src --ignore-src --rosdistro noetic -y    
+
+*/编译 
+catkin_make 
+source devel/setup.bash  
+
+*/将xml文件转成yaml文件，xml file path换成自己的地址  
+rosrun velodyne_pointcloud gen_calibration.py xml file path/META16S-1.xml   
+
+*/将VLP16_points.launch文件中第7行更改  
+<arg name="calibration" default="$(find velodyne_pointcloud)/params/META16S-1.yaml"/>   
+
+*/运行roslaunch，将/home/rich/桌面/catkin_ws/src/velodyne/velodyne_pointcloud/params/META16S-1.yaml地址更换成自己的
+ roslaunch velodyne_pointcloud VLP16_points.launch calibration:=/home/rich/桌面/catkin_ws/src/velodyne/velodyne_pointcloud/params/META16S-1.yaml  
+
+*/运行rviz  
+rosrun rviz rviz -f velodyne 

@@ -1,0 +1,21 @@
+﻿1.install driver
+sudo apt-get install ros-noetic(varies by version)-velodyne
+2.configure network
+sudo ifconfig enp2s0(network port name)192.168.1.200
+3.configuration ros
+①make work space 
+mkdir -p catkin_velodyne/src  
+cd catkin_velodyne/src  
+git clone https://github.com/ros-drivers/velodyne.git  
+cd ..  
+rosdep install --from-paths  src --ignore-src --rosdistro noetic -y  
+catkin_make  
+source devel/setup.bash
+②Convert xml file to yaml file（xml file path：velodyne_pointcloud/params）
+ rosrun velodyne_pointcloud gen_calibration.py xml file path LK-32-final.xml
+③Modify thelaunch file
+ <arg name="calibration" default="$(find velodyne_pointcloud)/params/LK-32-final.yaml"/>
+④Load and run the yaml file
+roslaunch velodyne_pointcloud VLP-32C_points.launch calibration:=/home/rich/桌面/catkin_ws/src/velodyne/velodyne_pointcloud/params/LK-32-final.yaml
+⑤ros rviz
+ rosrun rviz rviz -f velodyne  
